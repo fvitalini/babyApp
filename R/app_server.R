@@ -4,6 +4,7 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @import dplyr
+#' @import tidyr
 #' @noRd
 app_server <- function(input, output, session) {
 
@@ -22,7 +23,8 @@ app_server <- function(input, output, session) {
           date = Sys.Date(),
           weight = sample.int(1000, 4),
           temperature = sample.int(1000, 4),
-          length = sample.int(1000, 4)
+          length = sample.int(1000, 4),
+          stringsAsFactors = FALSE
         )
       })
     }

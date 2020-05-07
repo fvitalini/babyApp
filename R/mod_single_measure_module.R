@@ -27,22 +27,38 @@ mod_single_measure_module_ui <- function(id, param){
 mod_single_measure_module_server <- function(input, output, session, param, data){
   ns <- session$ns
 
+  today <- reactive({data %>%
+      select(date) %>%
+      max() %>%
+      pull()
+    })
+
   data_param <- reactive({
     data() %>% # data_param <- data %>%
-      mutate(value = get(param)) %>%
+      mutate(value = get(param),
+             week = lubridate::week(date),
+             month = lubridate::month(date),
+             ) %>%
       filter(value != 0 ) %>%
-      select(date, value) %>%
       group_by(date) %>%
-      mutate(mean_day = mean(value),
-             mean_week = zoo::rollapply(value, 7, mean, align = 'right', fill = 0),
-             mean_month = zoo::rollapply(value,
-                                         lubridate::days_in_month(lubridate::month(.$date)),
-                                         mean, align = 'right', fill = 0)) %>%
-    ungroup()
+      mutate(mean_day = mean(value)) %>%
+      ungroup() %>%
+      group_by(week) %>%
+      mutate(mean_week = mean(value)) %>%
+      ungroup() %>%
+      group_by(month) %>%
+      mutate(mean_month = mean(value)) %>%
+      ungroup()
   })
 
   # Data ----
-  counts <- reactive({data.frame(mean_today = 1, mean_week = 2, mean_month = 3)})
+  counts <- reactive({
+    data_param() %>% # counts <- data_param %>%
+      filter(date == max(date)) %>%
+      mutate(mean_today = mean_day) %>%
+      select(mean_today, mean_week, mean_month) %>%
+      distinct()
+  })
 
   # Boxes ----
   callModule(mod_caseBoxes_server, "boxes", counts, param)
