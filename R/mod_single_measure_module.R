@@ -14,6 +14,11 @@ mod_single_measure_module_ui <- function(id, param){
     br(),
     fluidRow(
       mod_caseBoxes_ui(ns("boxes"))
+    ),
+    fluidRow(
+      plotOutput(ns("plot_output"), width = "100%", height = 600),
+      tableOutput(ns("table_output")),
+      downloadButton(ns("downloadCsv"), "Download as CSV")
     )
   )
 }
@@ -23,21 +28,20 @@ mod_single_measure_module_ui <- function(id, param){
 #' @param param type of measure: weight, temperature, length
 #' @param data reactive dataset. as dataframe
 #'
+#' @import ggplot2
+#'
 #' @noRd
 mod_single_measure_module_server <- function(input, output, session, param, data){
   ns <- session$ns
 
-  today <- reactive({data %>%
-      select(date) %>%
-      max() %>%
-      pull()
-    })
+  # Data ----
 
   data_param <- reactive({
     data() %>% # data_param <- data %>%
       mutate(value = get(param),
-             week = lubridate::week(date),
-             month = lubridate::month(date),
+             date = lubridate::date(time),
+             week = lubridate::week(time),
+             month = lubridate::month(time),
              ) %>%
       filter(value != 0 ) %>%
       group_by(date) %>%
@@ -51,7 +55,6 @@ mod_single_measure_module_server <- function(input, output, session, param, data
       ungroup()
   })
 
-  # Data ----
   counts <- reactive({
     data_param() %>% # counts <- data_param %>%
       filter(date == max(date)) %>%
@@ -60,14 +63,32 @@ mod_single_measure_module_server <- function(input, output, session, param, data
       distinct()
   })
 
+  data_plot <- reactive({
+    data_param() %>% #data_plot <- data_param %>%
+      select(-names(colors_param), -date, -week,-month) %>%
+      as.data.frame()
+  })
+
   # Boxes ----
   callModule(mod_caseBoxes_server, "boxes", counts, param)
 
+  # Plot ----
+  output$plot_output <- renderPlot(
+    ggplot(data_plot(), aes(x = time, y = param)) +
+      geom_line() +
+      geom_point()
+  )
+
+  # Table ----
+  output$table_output <- renderTable({data_plot()})
+
+  output$downloadCsv <- downloadHandler(
+    filename = function() {
+      paste('data-', Sys.time(), '.csv', sep = '')
+    },
+    content = function(con) {
+      write.csv(data_plot(), con)
+    }
+  )
+
 }
-
-## To be copied in the UI
-# mod_single_measure_module_ui("single_measure_module_ui_1")
-
-## To be copied in the server
-# callModule(mod_single_measure_module_server, "single_measure_module_ui_1")
-
