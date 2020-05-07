@@ -17,7 +17,7 @@ app_server <- function(input, output, session) {
     } else {
       # data <- NULL
       data <- reactive({
-        data.frame(
+        data <- data.frame(
           time = rep(format(Sys.time(), format = "%H %M"), 4),
           date = Sys.Date(),
           weight = sample.int(1000, 4),
