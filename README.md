@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![Travis build
+status](https://travis-ci.com/fvitalini/babyApp.svg?branch=master)](https://travis-ci.com/fvitalini/babyApp)
 <!-- badges: end -->
 
 The goal of babyApp is to collect baby measures.

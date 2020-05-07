@@ -9,7 +9,10 @@ Imports:
     golem,
     shiny,
     processx,
-    htmltools
+    htmltools,
+    rsconnect,
+    rmarkdown,
+    pkgload
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1

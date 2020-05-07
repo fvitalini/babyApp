@@ -4,7 +4,10 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @noRd
-app_server <- function( input, output, session ) {
+app_server <- function(input, output, session) {
+
+  data_reactive <- reactive({data.frame(time = Sys.time(), weight = input$num_weight, temperature = input$num_temperature, length = input$num_length)})
+
   # List the first level callModules here
   callModule(mod_single_measure_module_server, "single_measure_module_weight", param = "weight", data = data_reactive())
   callModule(mod_single_measure_module_server, "single_measure_module_length", param = "length", data = data_reactive())
