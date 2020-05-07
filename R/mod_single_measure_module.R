@@ -27,6 +27,20 @@ mod_single_measure_module_ui <- function(id, param){
 mod_single_measure_module_server <- function(input, output, session, param, data){
   ns <- session$ns
 
+  data_param <- reactive({
+    data() %>% # data_param <- data %>%
+      mutate(value = get(param)) %>%
+      filter(value != 0 ) %>%
+      select(date, value) %>%
+      group_by(date) %>%
+      mutate(mean_day = mean(value),
+             mean_week = zoo::rollapply(value, 7, mean, align = 'right', fill = 0),
+             mean_month = zoo::rollapply(value,
+                                         lubridate::days_in_month(lubridate::month(.$date)),
+                                         mean, align = 'right', fill = 0)) %>%
+    ungroup()
+  })
+
   # Data ----
   counts <- reactive({data.frame(mean_today = 1, mean_week = 2, mean_month = 3)})
 
