@@ -10,3 +10,13 @@
 not_null <- Negate(is.null)
 
 not_na <- Negate(is.na)
+
+#' Global variables
+#'
+#' @noRd
+#'
+colors_param <- list(
+  weight = "#00c0ef",
+  temperature = "#f39c12",
+  length = "#00a65a"
+)

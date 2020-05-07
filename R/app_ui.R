@@ -11,8 +11,10 @@ app_ui <- function(request) {
     # List the first level UI elements here
     fluidPage(
       fluidRow(column(11, offset = 1, h3("babyMeasure"))),
+      hr(),
       fluidRow(
         column(3,
+               br(),
                numericInput(inputId = "weight", label = "Weight", min = 0, value = 0),
                numericInput(inputId = "temperature", label = "Temperature", min = 0, value = 0),
                numericInput(inputId = "length", label = "Length", min = 0, value = 0),

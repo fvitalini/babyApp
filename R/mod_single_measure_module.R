@@ -11,7 +11,10 @@
 mod_single_measure_module_ui <- function(id, param){
   ns <- NS(id)
   tagList(
-
+    br(),
+    fluidRow(
+      mod_caseBoxes_ui(ns("boxes"))
+    )
   )
 }
 
@@ -23,6 +26,12 @@ mod_single_measure_module_ui <- function(id, param){
 #' @noRd
 mod_single_measure_module_server <- function(input, output, session, param, data){
   ns <- session$ns
+
+  # Data ----
+  counts <- reactive({data.frame(mean_today = 1, mean_week = 2, mean_month = 3)})
+
+  # Boxes ----
+  callModule(mod_caseBoxes_server, "boxes", counts, param)
 
 }
 
